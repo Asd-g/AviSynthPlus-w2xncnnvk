@@ -1,0 +1,29 @@
+#include <winver.h>
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION             1,0,0,0
+PRODUCTVERSION        	1,0,0,0
+FILEFLAGSMASK           VS_FFI_FILEFLAGSMASK
+FILEFLAGS               0x0L
+FILEOS                  VOS__WINDOWS32
+FILETYPE                VFT_DLL
+FILESUBTYPE             VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+        VALUE "Comments",         "waifu2x-ncnn-Vulkan filter."
+        VALUE "FileDescription",  "waifu2x_nvk for AviSynth+."
+        VALUE "FileVersion",      "1.0.0"
+        VALUE "InternalName",     "waifu2x_nvk"
+        VALUE "OriginalFilename", "waifu2x_nvk.dll"
+        VALUE "ProductName",      "waifu2x_nvk"
+        VALUE "ProductVersion",   "1.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END

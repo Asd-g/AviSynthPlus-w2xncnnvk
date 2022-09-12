@@ -154,7 +154,7 @@ static AVS_Value AVSC_CC Create_w2xncnnvk(AVS_ScriptEnvironment* env, AVS_Value 
             AVS_Value cl{ avs_new_value_clip(clip) };
             AVS_Value args_[2]{ cl , avs_new_value_string(d->msg.get()) };
             AVS_Value inv{ avs_invoke(d->fi->env, "Text", avs_new_value_array(args_, 2), 0) };
-            AVS_Clip* clip1{ avs_new_c_filter(env, &d->fi, inv, 1) };
+            AVS_Clip* clip1{ avs_take_clip(inv, env) };
 
             v = avs_new_value_clip(clip1);
 

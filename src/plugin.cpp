@@ -69,6 +69,9 @@ static AVS_VideoFrame* AVSC_CC w2xncnnvk_get_frame(AVS_FilterInfo* fi, int n)
 {
     w2xncnnvk* d{ static_cast<w2xncnnvk*>(fi->user_data) };
     auto src{ avs_get_frame(fi->child, n) };
+    if (!src)
+        return nullptr;
+
     auto dst{ avs_new_video_frame_p(fi->env, &fi->vi, src) };
 
     filter(src, dst, d);

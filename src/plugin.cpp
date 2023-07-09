@@ -44,7 +44,7 @@ struct w2xncnnvk
     AVS_FilterInfo* fi;
     std::unique_ptr<Waifu2x> waifu2x;
     std::unique_ptr<std::counting_semaphore<>> semaphore;
-    std::unique_ptr<char[]> msg;
+    std::string msg;
 };
 
 static void filter(const AVS_VideoFrame* src, AVS_VideoFrame* dst, const w2xncnnvk* const __restrict d) noexcept
@@ -143,23 +143,13 @@ static AVS_Value AVSC_CC Create_w2xncnnvk(AVS_ScriptEnvironment* env, AVS_Value 
 
         if (avs_defined(avs_array_elt(args, List_gpu)) ? avs_as_bool(avs_array_elt(args, List_gpu)) : 0)
         {
-            std::string text;
-
             for (auto i{ 0 }; i < ncnn::get_gpu_count(); ++i)
-                text += std::to_string(i) + ": " + ncnn::get_gpu_info(i).device_name() + "\n";
-
-            d->msg = std::make_unique<char[]>(text.size() + 1);
-            strcpy(d->msg.get(), text.c_str());
+                d->msg += std::to_string(i) + ": " + ncnn::get_gpu_info(i).device_name() + "\n";
 
             AVS_Value cl{ avs_new_value_clip(clip) };
-            AVS_Value args_[2]{ cl , avs_new_value_string(d->msg.get()) };
-            AVS_Value inv{ avs_invoke(d->fi->env, "Text", avs_new_value_array(args_, 2), 0) };
-            AVS_Clip* clip1{ avs_take_clip(inv, env) };
+            AVS_Value args_[2]{ cl , avs_new_value_string(d->msg.c_str()) };
+            v = avs_invoke(d->fi->env, "Text", avs_new_value_array(args_, 2), 0);
 
-            v = avs_new_value_clip(clip1);
-
-            avs_release_clip(clip1);
-            avs_release_value(inv);
             avs_release_value(cl);
             avs_release_clip(clip);
 
@@ -256,10 +246,8 @@ static AVS_Value AVSC_CC Create_w2xncnnvk(AVS_ScriptEnvironment* env, AVS_Value 
     }
     catch (const char* error)
     {
-        const std::string err{ "waifu2x_nvk: "s + error };
-        d->msg = std::make_unique<char[]>(err.size() + 1);
-        strcpy(d->msg.get(), err.c_str());
-        v = avs_new_value_error(d->msg.get());
+        d->msg = "waifu2x_nvk: "s + error;
+        v = avs_new_value_error(d->msg.c_str());
 
         if (--numGPUInstances == 0)
             ncnn::destroy_gpu_instance();
@@ -278,7 +266,7 @@ static AVS_Value AVSC_CC Create_w2xncnnvk(AVS_ScriptEnvironment* env, AVS_Value 
     avs_release_clip(clip);
 
     return v;
-}
+    }
 
 const char* AVSC_CC avisynth_c_plugin_init(AVS_ScriptEnvironment* env)
 {
